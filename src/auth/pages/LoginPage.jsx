@@ -1,25 +1,29 @@
 import { Google } from "@mui/icons-material"
 import { Button, Grid, Link, TextField, Typography } from "@mui/material"
-import { useDispatch } from "react-redux"
+import { useMemo } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { Link as RouterLink } from 'react-router-dom'
 import { useForm } from "../../hooks/useForm"
-import { checkingAuth } from "../../store/auth/thunks"
+import { checkingAuth, startGoogleSignIn } from "../../store/auth/thunks"
 import { AuthLayout } from "../layout/AuthLayout"
 
 export const LoginPage = () => {
+
+  const { status } = useSelector( state => state.auth)
+
+  const isAuthLoading = useMemo(()=> status === 'checking')
 
   const dispatch = useDispatch()
 
   const {
     onInputChange,
-    onResetForm,
     formState: {
       email,
       password,
     }
   } = useForm({
-    email: 'bengiguitar@gmail.com',
-    password: '123456'
+    email: '',
+    password: ''
   })
 
   const onSubmit = (event) => {
@@ -29,8 +33,7 @@ export const LoginPage = () => {
   }
 
   const onGoogleSignIn = () => {
-    dispatch(checkingAuth())
-    console.log('google')
+    dispatch(startGoogleSignIn())
   }
 
 
@@ -70,12 +73,12 @@ export const LoginPage = () => {
           >
 
             <Grid item xs={12} sm={6} sx={{mt:2}}>
-              <Button type="submit" variant='contained' fullWidth>
+              <Button disabled={isAuthLoading} type="submit" variant='contained' fullWidth>
                 Login
               </Button>
             </Grid>
             <Grid item xs={12} sm={6} sx={{mt:2}}>
-              <Button onClick={ onGoogleSignIn } variant='contained' fullWidth>
+              <Button disabled={isAuthLoading} onClick={ onGoogleSignIn } variant='contained' fullWidth>
                 <Google />
                 <Typography sx={{ml:1}}>Google</Typography>
               </Button>
